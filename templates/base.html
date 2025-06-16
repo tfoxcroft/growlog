@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Grow Log</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <style>
+        /* Mobile-specific overrides */
+        @media (max-width: 767px) {
+            .navbar-brand {
+                font-size: 1.2rem;
+            }
+            .nav-link {
+                padding: 0.5rem 0;
+            }
+            .container.mt-4 {
+                margin-top: 1rem !important;
+            }
+            footer {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('index') }}">Grow Log</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <div class="navbar-nav">
+                    <a class="nav-link" href="{{ url_for('index') }}">Plants</a>
+                    {% if current_user.is_authenticated %}
+                        {% if current_user.is_admin %}
+                            <a class="nav-link" href="{{ url_for('list_users') }}">Users</a>
+                        {% endif %}
+                    {% endif %}
+                    {% if current_user.is_authenticated %}
+                        <a class="nav-link" href="{{ url_for('logout') }}">Logout ({{ current_user.username }})</a>
+                    {% else %}
+                        <a class="nav-link" href="{{ url_for('login') }}">Login</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container mt-4">    
+        <main>
+            {% block content %}{% endblock %}
+        </main>
+        
+        <footer class="mt-5 text-center text-muted">
+            <p>© 2025 GrowLog</p>
+        </footer>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Photo Modal -->
+    <div class="modal fade" id="photoModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="photoModalLabel"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <img id="modalPhoto" src="" class="img-fluid" style="max-height: 80vh;">
+                    <p class="text-muted mt-2" id="modalPhotoDate"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // Photo modal handling
+    document.addEventListener('DOMContentLoaded', function() {
+        // Handle all photo clicks
+        document.querySelectorAll('img[src^="/static/uploads/"]').forEach(img => {
+            img.addEventListener('click', function() {
+                const modal = new bootstrap.Modal(document.getElementById('photoModal'));
+                document.getElementById('modalPhoto').src = this.src;
+                document.getElementById('photoModalLabel').textContent =
+                    `${this.dataset.plantName} #${this.dataset.plantNumber}`;
+                document.getElementById('modalPhotoDate').textContent = this.dataset.photoDate;
+                modal.show();
+            });
+        });
+    });
+    </script>
+</body>
+</html>

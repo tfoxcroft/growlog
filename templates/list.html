@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="plant-list-page">
+<div class="mb-3">
+    <h2 class="mb-2">Plants</h2>
+    <form class="row g-2 mb-2" action="{{ url_for('index') }}" method="get">
+        <div class="col-8">
+            <input class="form-control" type="search" placeholder="Search plants..." name="q"
+                value="{{ search_query }}">
+        </div>
+        <div class="col-4">
+            <button class="btn btn-sm btn-outline-success w-100" type="submit">Search</button>
+        </div>
+    </form>
+    <a href="{{ url_for('add_plant') }}" class="btn btn-outline-primary btn-sm w-100 mb-2">Add New Plant</a>
+</div>
+
+{% if plants %}
+<div class="list-group">
+    {% for plant, photo in plants %}
+    <div class="list-group-item mb-2">
+        <a href="{{ url_for('view_plant', id=plant.id) }}">
+            <div>
+                <h4 class="mb-1">{{ plant.name }} #{{ plant.number }}</h4>
+                <small class="text-muted d-block mb-2">Owner: {{ plant.user.username }}</small>
+
+                {% if photo %}
+                <div class="mb-2 text-center">
+                    <img src="/static/{{ photo.photo_path }}" alt="{{ photo.label }}"
+                        style="max-width: 100%; max-height: 150px;" data-plant-name="{{ plant.name }}"
+                        data-plant-number="{{ plant.id }}"
+                        data-photo-date="{{ photo.created_at.strftime('%Y-%m-%d') }}">
+                </div>
+                {% else %}
+                <div class="mb-2 text-center">
+                    <img src="/static/images/plant-placeholder.jpg" alt="Plant placeholder"
+                        style="max-width: 100%; max-height: 150px;" data-plant-name="{{ plant.name }}"
+                        data-plant-number="{{ plant.id }}" data-photo-date="No photo">
+                </div>
+                {% endif %}
+            </div>
+        </a>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="alert alert-info">No plants found. <a href="{{ url_for('add_plant') }}">Add your first plant</a></div>
+{% endif %}
+</div>
+{% endblock %}

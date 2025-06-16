@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "5000:5000"
+    volumes:
+      - db_data:/var/lib/sqlite
+      - uploads_data:/app/static/uploads
+    environment:
+      - FLASK_ENV=development
+      - SQLALCHEMY_DATABASE_URI=sqlite:////var/lib/sqlite/items.db
+    restart: unless-stopped
+
+volumes:
+  db_data:

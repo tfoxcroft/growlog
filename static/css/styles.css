@@ -1,0 +1,372 @@
+body {
+    background-color: #f8f9fa;
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+.container {
+    width: 100%;
+    max-width: 100%;
+    padding: 0 15px;
+}
+
+.list-group-item {
+    padding: 1rem;
+}
+
+.plant-list-page .list-group-item a {
+    text-decoration: none;
+    color: var(--bs-card-title-color);
+}
+
+.plant-list-page img {
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border: 1px solid rgba(0,0,0,0.05);
+    transition: all 0.2s ease;
+}
+
+.plant-list-page img:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.list-group-item h5 {
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+}
+
+.list-group-item p {
+    margin-bottom: 0;
+    font-size: 0.95rem;
+}
+
+.btn {
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    min-height: 44px; /* Better touch target */
+    transition: all 0.2s ease;
+}
+
+.btn-sm {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.9rem;
+    min-height: 36px;
+    transition: all 0.2s ease;
+}
+
+/* Garden-themed button colors */
+.btn-primary {
+    background-color: #8a9a5b;
+    border-color: #8a9a5b;
+}
+
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active {
+    background-color: #7a8a4b;
+    border-color: #7a8a4b;
+}
+
+.btn-secondary {
+    background-color: #a68a64;
+    border-color: #a68a64;
+}
+
+.btn-secondary:hover,
+.btn-secondary:focus,
+.btn-secondary:active {
+    background-color: #967a54;
+    border-color: #967a54;
+}
+
+.btn-success {
+    background-color: #6b8e23;
+    border-color: #6b8e23;
+}
+
+.btn-success:hover,
+.btn-success:focus,
+.btn-success:active {
+    background-color: #5b7e13;
+    border-color: #5b7e13;
+}
+
+.btn-danger {
+    background-color: #b7410e;
+    border-color: #b7410e;
+}
+
+.btn-danger:hover,
+.btn-danger:focus,
+.btn-danger:active {
+    background-color: #a73100;
+    border-color: #a73100;
+}
+
+.btn-warning {
+    background-color: #daa520;
+    border-color: #daa520;
+}
+
+.btn-warning:hover,
+.btn-warning:focus,
+.btn-warning:active {
+    background-color: #ca9510;
+    border-color: #ca9510;
+}
+
+.btn-info {
+    background-color: #6f9eaf;
+    border-color: #6f9eaf;
+}
+
+.btn-info:hover,
+.btn-info:focus,
+.btn-info:active {
+    background-color: #5f8e9f;
+    border-color: #5f8e9f;
+}
+
+.btn-outline-primary {
+    color: #8a9a5b;
+    border-color: #8a9a5b;
+}
+
+.btn-outline-primary:hover,
+.btn-outline-primary:focus,
+.btn-outline-primary:active {
+    color: #fff;
+    background-color: #8a9a5b;
+    border-color: #8a9a5b;
+}
+
+.btn-outline-secondary {
+    color: #a68a64;
+    border-color: #a68a64;
+}
+
+.btn-outline-secondary:hover,
+.btn-outline-secondary:focus,
+.btn-outline-secondary:active {
+    color: #fff;
+    background-color: #a68a64;
+    border-color: #a68a64;
+}
+
+.btn-outline-success {
+    color: #6b8e23;
+    border-color: #6b8e23;
+}
+
+.btn-outline-success:hover,
+.btn-outline-success:focus,
+.btn-outline-success:active {
+    color: #fff;
+    background-color: #6b8e23;
+    border-color: #6b8e23;
+}
+
+.btn-outline-danger {
+    color: #b7410e;
+    border-color: #b7410e;
+}
+
+.btn-outline-danger:hover,
+.btn-outline-danger:focus,
+.btn-outline-danger:active {
+    color: #fff;
+    background-color: #b7410e;
+    border-color: #b7410e;
+}
+
+.btn-outline-warning {
+    color: #daa520;
+    border-color: #daa520;
+}
+
+.btn-outline-warning:hover,
+.btn-outline-warning:focus,
+.btn-outline-warning:active {
+    color: #fff;
+    background-color: #daa520;
+    border-color: #daa520;
+}
+
+.btn-outline-info {
+    color: #6f9eaf;
+    border-color: #6f9eaf;
+}
+
+.btn-outline-info:hover,
+.btn-outline-info:focus,
+.btn-outline-info:active {
+    color: #fff;
+    background-color: #6f9eaf;
+    border-color: #6f9eaf;
+}
+.btn-outline-primary {
+    color: #8a9a5b;
+    border-color: #8a9a5b;
+}
+
+.btn-outline-primary:hover {
+    color: #fff;
+    background-color: #8a9a5b;
+    border-color: #8a9a5b;
+}
+
+.btn-outline-secondary {
+    color: #a68a64;
+    border-color: #a68a64;
+}
+
+.btn-outline-secondary:hover {
+    color: #fff;
+    background-color: #a68a64;
+    border-color: #a68a64;
+}
+
+.btn-outline-success {
+    color: #6b8e23;
+    border-color: #6b8e23;
+}
+
+.btn-outline-success:hover {
+    color: #fff;
+    background-color: #6b8e23;
+    border-color: #6b8e23;
+}
+
+.btn-outline-danger {
+    color: #b7410e;
+    border-color: #b7410e;
+}
+
+.btn-outline-danger:hover {
+    color: #fff;
+    background-color: #b7410e;
+    border-color: #b7410e;
+}
+
+.btn-outline-warning {
+    color: #daa520;
+    border-color: #daa520;
+}
+
+.btn-outline-warning:hover {
+    color: #fff;
+    background-color: #daa520;
+    border-color: #daa520;
+}
+
+.btn-outline-info {
+    color: #6f9eaf;
+    border-color: #6f9eaf;
+}
+
+.btn-outline-info:hover {
+    color: #fff;
+    background-color: #6f9eaf;
+    border-color: #6f9eaf;
+}
+
+.btn-primary {
+    background-color: #8a9a5b; /* Sage green */
+    border-color: #8a9a5b;
+}
+
+.btn-primary:hover {
+    background-color: #7a8a4b;
+    border-color: #7a8a4b;
+}
+
+.btn-secondary {
+    background-color: #a68a64; /* Earthy brown */
+    border-color: #a68a64;
+}
+
+.btn-secondary:hover {
+    background-color: #967a54;
+    border-color: #967a54;
+}
+
+.btn-success {
+    background-color: #6b8e23; /* Moss green */
+    border-color: #6b8e23;
+}
+
+.btn-success:hover {
+    background-color: #5b7e13;
+    border-color: #5b7e13;
+}
+
+.btn-danger {
+    background-color: #b7410e; /* Rust red */
+    border-color: #b7410e;
+}
+
+.btn-danger:hover {
+    background-color: #a73100;
+    border-color: #a73100;
+}
+
+.btn-warning {
+    background-color: #daa520; /* Goldenrod */
+    border-color: #daa520;
+}
+
+.btn-warning:hover {
+    background-color: #ca9510;
+    border-color: #ca9510;
+}
+
+.btn-info {
+    background-color: #6f9eaf; /* Soft blue */
+    border-color: #6f9eaf;
+}
+
+.btn-info:hover {
+    background-color: #5f8e9f;
+    border-color: #5f8e9f;
+}
+
+.form-control {
+    font-size: 1rem;
+    padding: 0.5rem 0.75rem;
+    min-height: 44px;
+}
+
+/* Mobile-specific styles */
+@media (max-width: 767px) {
+    .navbar-collapse {
+        background-color: #343a40;
+        padding: 0.5rem 1rem;
+        margin-top: 0.5rem;
+        border-radius: 0.25rem;
+    }
+    
+    .navbar-nav .nav-link {
+        padding: 0.5rem 0;
+        border-top: 1px solid rgba(255,255,255,0.1);
+    }
+    
+    .navbar-nav .nav-link:first-child {
+        border-top: none;
+    }
+    
+    .card {
+        margin-bottom: 1rem;
+    }
+    
+    .modal-dialog {
+        margin: 0.5rem auto;
+    }
+    
+    .modal-content {
+        border-radius: 0;
+    }
+    
+    .modal-body img {
+        max-height: 60vh !important;
+    }
+}

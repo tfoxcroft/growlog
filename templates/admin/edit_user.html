@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container" style="max-width: 500px">
+    <h2 class="mb-4">{% if user %}Edit{% else %}Add{% endif %} User</h2>
+    
+    <form method="POST">
+        <div class="mb-3">
+            <label for="username" class="form-label">Username</label>
+            <input type="text" class="form-control" id="username" name="username" 
+                   value="{% if user %}{{ user.username }}{% endif %}" required>
+        </div>
+        
+        <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <input type="password" class="form-control" id="password" name="password" 
+                   {% if not user %}required{% endif %}>
+            {% if user %}<small class="text-muted">Leave blank to keep current password</small>{% endif %}
+        </div>
+        
+        <div class="mb-3 form-check">
+            <input type="checkbox" class="form-check-input" id="is_admin" name="is_admin" 
+                   {% if user and user.is_admin %}checked{% endif %}>
+            <label class="form-check-label" for="is_admin">Admin User</label>
+        </div>
+        
+        <button type="submit" class="btn btn-sm btn-primary">Save</button>
+        <a href="{{ url_for('list_users') }}" class="btn btn-sm btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container px-2">
+    <div class="card mb-3">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2 class="card-title mb-0">Add Fact to {{ plant.name }} #{{ plant.number }}</h2>
+                <a href="/plant/{{ plant.id }}/facts" class="btn btn-outline-secondary btn-sm">
+                    ← Back to Facts
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <form id="add-fact-form" class="mt-4">
+        <input type="hidden" id="plant-id" value="{{ plant.id }}">
+        <div class="mb-3 p-3 bg-light rounded">
+            <label class="form-label">Add New Fact</label>
+            <div class="row g-2">
+                <div class="col-12 col-md-6">
+                    <select class="form-select" name="label_type" id="label-type" required>
+                        <option value="">Select label type</option>
+                        <option value="date_planted">Date Planted</option>
+                        <option value="plant_type">Plant Type</option>
+                        <option value="germination_date">Germination Date</option>
+                        <option value="location">Location</option>
+                        <option value="entered_location_date">Entered Location Date</option>
+                        <option value="photo">Photo</option>
+                        <option value="note">Note</option>
+                        <option value="comment">Comment</option>
+                        <option value="source">Source</option>
+                        <option value="custom">Custom Label</option>
+                        <option value="plant_description">Plant description and care</option>
+                    </select>
+                    <input type="text" class="form-control mt-2 d-none" name="custom_label" id="custom-label"
+                        placeholder="Enter custom label">
+                </div>
+                <div class="col-12 col-md-6">
+                    <select class="form-select" name="value_type" required>
+                        <option value="short_text">Short Text</option>
+                        <option value="long_text">Long Text</option>
+                        <option value="date">Date</option>
+                        <option value="integer">Integer</option>
+                        <option value="decimal">Decimal</option>
+                        <option value="photo">Photo</option>
+                        <option value="plant_description">Photo</option>
+                    </select>
+                </div>                
+            </div>
+            <div class="mt-2 value-input-container">
+                <textarea class="form-control d-none" name="long_text_value" rows="3"
+                    placeholder="Enter text"></textarea>
+                <input type="date" class="form-control d-none" name="date_value">
+                <input type="number" class="form-control d-none" name="integer_value" step="1"
+                    placeholder="Enter whole number">
+                <input type="number" class="form-control d-none" name="decimal_value" step="0.01"
+                    placeholder="Enter decimal number">
+                <input type="text" class="form-control" name="short_text_value" placeholder="Enter text">
+                <input type="file" class="form-control d-none" name="photo" accept="image/*">
+            </div>
+        </div>
+        <button type="submit" class="btn btn-sm btn-primary w-100">Add</button>
+    </form>
+</div>
+
+<script>
+    // JavaScript for dynamic form handling
+    document.addEventListener('DOMContentLoaded', function () {
+        // Show appropriate input field based on selected type
+        const typeSelect = document.querySelector('select[name="value_type"]');
+        const valueInputs = document.querySelectorAll('.value-input-container input, .value-input-container textarea');
+        const plantId = document.getElementById('plant-id').value;
+
+        typeSelect.addEventListener('change', function () {
+            valueInputs.forEach(input => input.classList.add('d-none'));
+            const selectedType = this.value;
+            if (selectedType === 'photo') {
+                document.querySelector('input[name="photo"]').classList.remove('d-none');
+            } else {
+                document.querySelector(`input[name="${selectedType}_value"], textarea[name="${selectedType}_value"]`)
+                    .classList.remove('d-none');
+            }
+        });
+
+        // Toggle custom label input
+        document.getElementById('label-type')?.addEventListener('change', function () {
+            const customLabelInput = document.getElementById('custom-label');
+            customLabelInput.classList.toggle('d-none', this.value !== 'custom');
+            if (this.value !== 'custom') {
+                customLabelInput.value = '';
+            }
+        });
+
+        document.getElementById('add-fact-form')?.addEventListener('submit', function (e) {
+            e.preventDefault();
+            const form = e.target;
+
+            const labelTypeSelect = form.querySelector('[name="label_type"]');
+            if (!labelTypeSelect) {
+                console.error('Label type select not found');
+                return;
+            }
+
+            const labelType = labelTypeSelect.value;
+            if (!labelType) {
+                alert('Please select a label type');
+                return;
+            }
+
+            let label;
+            if (labelType === 'custom') {
+                const customLabelInput = form.querySelector('[name="custom_label"]');
+                if (!customLabelInput || !customLabelInput.value.trim()) {
+                    alert('Please enter a custom label');
+                    return;
+                }
+                label = customLabelInput.value.trim();
+            } else {
+                label = labelTypeSelect.options[labelTypeSelect.selectedIndex].text;
+            }
+            const valueType = form.value_type.value;
+            let formData;
+
+            if (valueType === 'photo') {
+                const photoInput = form.querySelector('input[name="photo"]');
+                if (!photoInput.files[0]) {
+                    alert('Please select a photo');
+                    return;
+                }
+
+                formData = new FormData();
+                formData.append('label', label);
+                formData.append('value_type', 'photo');
+                formData.append('photo', photoInput.files[0]);
+            } else {
+                const value = form[`${valueType}_value`].value;
+                formData = new FormData();
+                formData.append('label', label);
+                formData.append('value', value);
+                formData.append('value_type', valueType);
+            }
+
+            fetch(`/api/plant/${plantId}/facts`, {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    window.location.href = `/plant/${plantId}/facts`;
+                })
+                .catch(error => console.error('Error:', error));
+        });
+    });
+    </script>
+{% endblock %}
