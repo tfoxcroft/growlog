@@ -122,6 +122,14 @@
         document.getElementById('add-fact-form')?.addEventListener('submit', function (e) {
             e.preventDefault();
             const form = e.target;
+            const submitBtn = form.querySelector('button[type="submit"]');
+            
+            // Show loading state
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `
+                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                Processing...
+            `;
 
             const labelTypeSelect = form.querySelector('[name="label_type"]');
             if (!labelTypeSelect) {
@@ -204,6 +212,10 @@
                     } else {
                         window.location.href = `/view/${plantId}`;
                     }
+                    
+                    // Reset button state in case of error
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Add';
                 })
                 .catch(error => {
                     console.error('Error:', error);
@@ -224,6 +236,10 @@
                     if (window.bootstrap) {
                         new bootstrap.Alert(errorAlert);
                     }
+                    
+                    // Reset button state on error
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Add';
                 });
         });
     });
