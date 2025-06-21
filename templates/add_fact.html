@@ -77,7 +77,7 @@
                 document.querySelector('input[name="photo"]').classList.remove('d-none');
             } else if (selectedType === 'plant_description') {
                 // No input needed for plant_description - will be auto-generated
-                document.querySelector('input[name="short_text_value"]').classList.remove('d-none');
+                // Don't show any input field
             } else {
                 document.querySelector(`input[name="${selectedType}_value"], textarea[name="${selectedType}_value"]`)
                     .classList.remove('d-none');
