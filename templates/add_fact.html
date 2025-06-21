@@ -180,9 +180,48 @@
             })
                 .then(response => response.json())
                 .then(data => {
-                    window.location.href = `/view/${plantId}`;
+                    if (data.error) {
+                        // Remove any existing alerts first
+                        const existingAlerts = document.querySelectorAll('.alert');
+                        existingAlerts.forEach(alert => alert.remove());
+                        
+                        // Show error message to user
+                        const errorAlert = document.createElement('div');
+                        errorAlert.className = 'alert alert-danger mt-3';
+                        errorAlert.innerHTML = `
+                            <strong>Error:</strong> ${data.error}
+                            <button type="button" class="btn-close float-end" data-bs-dismiss="alert"></button>
+                        `;
+                        document.querySelector('.container').prepend(errorAlert);
+                        
+                        // Initialize Bootstrap alert dismiss
+                        if (window.bootstrap) {
+                            new bootstrap.Alert(errorAlert);
+                        }
+                    } else {
+                        window.location.href = `/view/${plantId}`;
+                    }
                 })
-                .catch(error => console.error('Error:', error));
+                .catch(error => {
+                    console.error('Error:', error);
+                    // Remove any existing alerts first
+                    const existingAlerts = document.querySelectorAll('.alert');
+                    existingAlerts.forEach(alert => alert.remove());
+                    
+                    // Show error message to user
+                    const errorAlert = document.createElement('div');
+                    errorAlert.className = 'alert alert-danger mt-3';
+                    errorAlert.innerHTML = `
+                        <strong>Error:</strong> An unexpected error occurred
+                        <button type="button" class="btn-close float-end" data-bs-dismiss="alert"></button>
+                    `;
+                    document.querySelector('.container').prepend(errorAlert);
+                    
+                    // Initialize Bootstrap alert dismiss
+                    if (window.bootstrap) {
+                        new bootstrap.Alert(errorAlert);
+                    }
+                });
         });
     });
     </script>

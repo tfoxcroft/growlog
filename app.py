@@ -207,7 +207,9 @@ def add_fact(plant_id):
 
         if not plant_type_fact:
             logging.error(f"No Plant Type fact found for plant_id: {plant.id}")
-            return jsonify({'error': 'No Plant Type fact found'}), 400
+            return jsonify({
+                'error': 'Cannot generate description - please first set a Plant Type for this plant'
+            }), 400
 
         # Call Deepseek API
         plant_type = plant_type_fact.value
