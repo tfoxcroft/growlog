@@ -1,0 +1,21 @@
+{
+  "name": "Grow Log",
+  "short_name": "GrowLog",
+  "description": "Plant growth tracking application",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#212529",
+  "icons": [
+    {
+      "src": "/static/images/plant-placeholder.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg"
+    },
+    {
+      "src": "/static/images/plant-placeholder.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg"
+    }
+  ]
+}

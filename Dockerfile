@@ -19,6 +19,7 @@ COPY requirements.txt .
 COPY app.py .
 COPY static/ /app/static/
 COPY templates/ /app/templates/
+COPY services/ /app/services/
 RUN chown -R 1000:1000 /app
 
 # Expose the port the app runs on

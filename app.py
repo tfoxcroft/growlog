@@ -1,3 +1,4 @@
+import json
 import os
 from functools import wraps
 from flask import Flask, render_template, request, redirect, url_for, jsonify, flash
@@ -7,13 +8,27 @@ from flask_login import LoginManager, UserMixin, login_user, login_required, log
 from werkzeug.security import generate_password_hash, check_password_hash
 import secrets
 import logging
+from services.deepseek_service import DeepseekService
 
 app = Flask(__name__)
-# Use environment variable if set, otherwise default to instance folder
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('SQLALCHEMY_DATABASE_URI', 'sqlite:///items.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SECRET_KEY'] = secrets.token_hex(16)
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'growlog-secure-key-32-chars-long-1234')
+app.config['DEEPSEEK_API_KEY'] = os.environ.get('DEEPSEEK_API_KEY')
 db = SQLAlchemy(app)
+
+def from_json(value):
+    try:
+        return json.loads(value)
+    except (ValueError, TypeError):
+        return value
+
+app.jinja_env.filters['from_json'] = from_json
+
+# Serve manifest.json from root path
+@app.route('/manifest.json')
+def serve_manifest():
+    return app.send_static_file('manifest.json')
 
 # Initialize Flask-Login
 login_manager = LoginManager()
@@ -42,7 +57,7 @@ class Plant(db.Model):
     name = db.Column(db.String(100), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     user = db.relationship('User', backref='plants')
-    facts = db.relationship('PlantFact', backref='plant', lazy=True, order_by='PlantFact.position')
+    facts = db.relationship('PlantFact', backref='plant', lazy=True, order_by='PlantFact.position', cascade="all, delete-orphan")
 
 class PlantFact(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -130,9 +145,10 @@ def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
+        remember = 'remember' in request.form
         user = User.query.filter_by(username=username).first()
         if user and user.check_password(password):
-            login_user(user)
+            login_user(user, remember=remember)
             return redirect(url_for('index'))
         flash('Invalid username or password')
     return render_template('login.html')
@@ -161,10 +177,6 @@ def index():
         plants_with_photos.append((plant, first_photo))
     
     return render_template('list.html', plants=plants_with_photos, search_query=search_query)
-@app.route('/plant/<int:plant_id>/facts')
-def manage_facts(plant_id):
-    plant = Plant.query.get_or_404(plant_id)
-    return render_template('plant_facts.html', plant=plant)
 
 @app.route('/plant/<int:plant_id>/facts/add')
 @login_required
@@ -184,7 +196,7 @@ def add_fact(plant_id):
         data = request.get_json()
     
     # Handle plant description special case
-    if data.get('label_type') == 'plant_description':
+    if data.get('value_type') == 'plant_description':
         logging.info(f"Entering plant_description case for plant_id: {plant.id}")
         
         # Get first plant type fact
@@ -197,20 +209,30 @@ def add_fact(plant_id):
             logging.error(f"No Plant Type fact found for plant_id: {plant.id}")
             return jsonify({'error': 'No Plant Type fact found'}), 400
 
-        # Call Deepseek API (mock implementation)
+        # Call Deepseek API
         plant_type = plant_type_fact.value
         logging.info(f"Generating description for plant_type: {plant_type}")
         
-        description = f"Description for {plant_type}"
-        care = f"Care guidelines for {plant_type}"
-        data['value'] = f"Description: {description}\n\nCare Guidelines: {care}"
-        data['value_type'] = 'long_text'
-        logging.debug(f"Generated description: {data['value']}")
+        try:
+            deepseek = DeepseekService(app.config['DEEPSEEK_API_KEY'])
+            result = deepseek.generate_plant_description(plant_type)
+            generated_value = {
+                'description': result['description'],
+                'care_guidelines': result['care_guidelines']
+            }
+            logging.debug(f"Generated description: {json.dumps(generated_value)}")
+        except Exception as e:
+            logging.error(f"Failed to generate plant description: {str(e)}")
+            return jsonify({'error': 'Failed to generate plant description'}), 500
 
+        # Serialize the generated description before storage
+        serialized_value = json.dumps(generated_value)
+        logging.debug(f"Serialized value: {serialized_value}")
+        
         fact = PlantFact(
             plant_id=plant.id,
             label=data['label'],
-            value='Value from deepseek',
+            value=serialized_value,
             value_type='plant_description',
             position=len(plant.facts)
         )
@@ -240,13 +262,23 @@ def add_fact(plant_id):
             position=len(plant.facts)
         )
     else:
+        # Convert and validate value before insertion
+        value = data['value']
+        if isinstance(value, dict):
+            value = json.dumps(value)
+        elif not isinstance(value, str):
+            value = str(value)
+        
+        # Debug log the value type before insertion
+        app.logger.debug(f"Storing fact value (type: {type(value)}): {value[:100]}")
+            
         fact = PlantFact(
             plant_id=plant.id,
             label=data['label'],
-            value=data['value'],
+            value=value,
             value_type=data['value_type'],
             position=len(plant.facts)
-    )
+        )
     
     db.session.add(fact)
     db.session.commit()
