@@ -196,8 +196,8 @@ def add_fact(plant_id):
         data = request.get_json()
     
     # Handle plant description special case
-    if data.get('value_type') == 'plant_description':
-        logging.info(f"Entering plant_description case for plant_id: {plant.id}")
+    if data.get('value_type') == 'plant_care':
+        logging.info(f"Entering plant_care case for plant_id: {plant.id}")
         
         # Get first plant type fact
         plant_type_fact = PlantFact.query.filter_by(
@@ -208,34 +208,26 @@ def add_fact(plant_id):
         if not plant_type_fact:
             logging.error(f"No Plant Type fact found for plant_id: {plant.id}")
             return jsonify({
-                'error': 'Cannot generate description - please first set a Plant Type for this plant'
+                'error': 'Cannot generate care guidelines - please first set a Plant Type for this plant'
             }), 400
 
         # Call Deepseek API
         plant_type = plant_type_fact.value
-        logging.info(f"Generating description for plant_type: {plant_type}")
+        logging.info(f"Generating care guidelines for plant_type: {plant_type}")
         
         try:
             deepseek = DeepseekService(app.config['DEEPSEEK_API_KEY'])
-            result = deepseek.generate_plant_description(plant_type)
-            generated_value = {
-                'description': result['description'],
-                'care_guidelines': result['care_guidelines']
-            }
-            logging.debug(f"Generated description: {json.dumps(generated_value)}")
+            care_guidelines = deepseek.generate_care_guidelines(plant_type)
+            logging.debug(f"Generated care guidelines: {care_guidelines}")
         except Exception as e:
-            logging.error(f"Failed to generate plant description: {str(e)}")
-            return jsonify({'error': 'Failed to generate plant description'}), 500
-
-        # Serialize the generated description before storage
-        serialized_value = json.dumps(generated_value)
-        logging.debug(f"Serialized value: {serialized_value}")
+            logging.error(f"Failed to generate care guidelines: {str(e)}")
+            return jsonify({'error': 'Failed to generate care guidelines'}), 500
         
         fact = PlantFact(
             plant_id=plant.id,
             label=data['label'],
-            value=serialized_value,
-            value_type='plant_description',
+            value=care_guidelines,
+            value_type='plant_care',
             position=len(plant.facts)
         )
         

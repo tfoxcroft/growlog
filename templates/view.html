@@ -53,20 +53,9 @@
                         </div>
                         {% else %}
                         {% if fact.value_type == 'plant_description' %}
-                        <div class="plant-description">
-                            {% set description = fact.value|from_json if fact.value.startswith('{') else {'description': fact.value, 'care_guidelines': ''} %}
-                            <h6>Description</h6>
-                            <p>{{ description.description }}</p>
-                            {% if description.care_guidelines %}
+                        <div class="plant-care-guidelines">
                             <h6>Care Guidelines</h6>
-                            <ul>
-                                {% for guideline in description.care_guidelines.split('\n') %}
-                                    {% if guideline.strip() %}
-                                    <li>{{ guideline }}</li>
-                                    {% endif %}
-                                {% endfor %}
-                            </ul>
-                            {% endif %}
+                            <p>{{ fact.value }}</p>
                         </div>
                         {% else %}
                         <p class="mb-2">{{ fact.value }}</p>

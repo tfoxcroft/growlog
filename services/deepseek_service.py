@@ -1,4 +1,5 @@
 import os
+import json
 import requests
 import logging
 from typing import Optional
@@ -10,26 +11,20 @@ class DeepseekService:
         if not self.api_key:
             raise ValueError("Deepseek API key not provided and DEEPSEEK_API_KEY environment variable not set")
 
-    def generate_plant_description(self, plant_type: str) -> dict:
-        """Generate plant description and care guidelines using Deepseek API"""
+    def generate_care_guidelines(self, plant_type: str) -> str:
+        """Generate plant care guidelines using Deepseek API"""
         try:
             headers = {
                 'Authorization': f'Bearer {self.api_key}',
                 'Content-Type': 'application/json'
             }
             
-            prompt = f"""Generate a detailed description and simple care guidelines for a {plant_type} plant.
-            Return ONLY a JSON object with these two fields:
-            - "description": A single paragraph describing the plant's characteristics
-            - "care_guidelines": A single paragraph with basic care instructions
+            prompt = f"""Generate simple care guidelines for a {plant_type} plant.
+            Return ONLY a single paragraph with basic care instructions.
             
-            Example:
-            {{
-              "description": "Chives are...",
-              "care_guidelines": "Water chives..."
-            }}
+            Example: "Water chives when the soil is dry to the touch..."
             
-            Do not include markdown, nested structures, or additional fields. Dont wrap the response in markdown, return only the json text.
+            Do not include markdown, JSON, or any formatting. Return only the plain text care guidelines.
             """
             
             payload = {
@@ -41,7 +36,7 @@ class DeepseekService:
                     }
                 ],
                 "temperature": 0.7,
-                "max_tokens": 1000
+                "max_tokens": 500
             }
             
             response = requests.post(
@@ -53,33 +48,7 @@ class DeepseekService:
             response.raise_for_status()
             
             result = response.json()
-            content = result['choices'][0]['message']['content']
-            
-            print(content)
-            
-            # Parse and simplify the response
-            try:
-                import json
-                response_data = json.loads(content)
-                
-                # Flatten any nested structures
-                description = response_data.get('description', '')
-                if isinstance(description, dict):
-                    description = ' '.join(str(v) for v in description.values())
-                
-                care_guidelines = response_data.get('care_guidelines', '')
-                if isinstance(care_guidelines, dict):
-                    care_guidelines = ' '.join(str(v) for v in care_guidelines.values())
-                
-                return {
-                    'description': description or f"Description for {plant_type}",
-                    'care_guidelines': care_guidelines or f"Care guidelines for {plant_type}"
-                }
-            except:
-                return {
-                    'description': f"Description for {plant_type}",
-                    'care_guidelines': f"Care guidelines for {plant_type}"
-                }
+            return result['choices'][0]['message']['content'].strip()
                 
         except requests.exceptions.RequestException as e:
             logging.error(f"Deepseek API request failed: {str(e)}")

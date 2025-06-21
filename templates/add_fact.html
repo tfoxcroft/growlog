@@ -26,7 +26,7 @@
                         <option value="comment">Comment</option>
                         <option value="note">Note</option>
                         <option value="custom">Custom</option>
-                        <option value="plant_description">Description and care</option>
+                        <option value="plant_care">Care Guidelines</option>
                     </select>
                     <input type="text" class="form-control mt-2 d-none" name="custom_label" id="custom-label"
                         placeholder="Enter custom label">
@@ -39,7 +39,7 @@
                         <option value="integer">Integer</option>
                         <option value="decimal">Decimal</option>
                         <option value="photo">Photo</option>
-                        <option value="plant_description">Plant Description</option>
+                        <option value="plant_care">Plant Care</option>
                     </select>
                 </div>                
             </div>
@@ -75,8 +75,8 @@
             const selectedType = this.value;
             if (selectedType === 'photo') {
                 document.querySelector('input[name="photo"]').classList.remove('d-none');
-            } else if (selectedType === 'plant_description') {
-                // No input needed for plant_description - will be auto-generated
+            } else if (selectedType === 'plant_care') {
+                // No input needed for plant_care - will be auto-generated
                 // Don't show any input field
             } else {
                 document.querySelector(`input[name="${selectedType}_value"], textarea[name="${selectedType}_value"]`)
@@ -109,7 +109,7 @@
                 'note': 'long_text',
                 'comment': 'short_text',
                 'source': 'short_text',
-                'plant_description': 'plant_description'
+                'plant_care': 'plant_care'
             };
             
             if (valueTypeMap[this.value]) {
@@ -160,10 +160,13 @@
                 formData.append('label', label);
                 formData.append('value_type', 'photo');
                 formData.append('photo', photoInput.files[0]);
-            } else if (valueType === 'plant_description') {
+            } else if (valueType === 'plant_care') {
+                // Hide any visible input fields
+                valueInputs.forEach(input => input.classList.add('d-none'));
+                
                 formData = new FormData();
                 formData.append('label', label);
-                formData.append('value_type', 'plant_description');
+                formData.append('value_type', 'plant_care');
                 // Value will be generated server-side
                 formData.append('value', '');
             } else {
